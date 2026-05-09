@@ -34,7 +34,7 @@ export class Recorder {
     this.save();
   }
 
-  save(filename = DEFAULT_TEST_CASE_PATH): void {
+  save(filename = DEFAULT_TEST_CASE_PATH): string {
     if (!fs.existsSync(OUTPUT_DIR)) {
       fs.mkdirSync(OUTPUT_DIR, { recursive: true });
     }
@@ -48,6 +48,7 @@ export class Recorder {
     const filePath = path.isAbsolute(filename) ? filename : path.join(process.cwd(), filename);
     fs.writeFileSync(filePath, JSON.stringify(testCase, null, 2));
     console.log(`[Recorder] Test case saved to ${filePath}`);
+    return filePath;
   }
 
   getSteps(): TestStep[] {

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Testcase Recorder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">AI-guided Browser Recording</p>
+          <h1>AI Testcase Recorder</h1>
+          <p class="subtitle">
+            Run the existing Playwright recorder through a real GUI: configure the goal, watch the browser preview,
+            inspect live steps, and collect reusable JSON output.
+          </p>
+        </div>
+        <div class="status-card">
+          <span class="status-label">Session</span>
+          <strong id="sessionStatus">Idle</strong>
+          <span id="statusHint">Ready to start a new recording</span>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="panel panel-form">
+          <div class="panel-header">
+            <h2>Recording Setup</h2>
+            <p>Enter the target flow and choose the model you want to drive the next-step decisions.</p>
+          </div>
+
+          <form id="recordForm" class="form">
+            <label>
+              <span>Start URL</span>
+              <input id="startUrl" name="startUrl" type="url" placeholder="https://example.com" required />
+            </label>
+
+            <label>
+              <span>Goal</span>
+              <textarea
+                id="goal"
+                name="goal"
+                rows="4"
+                placeholder="Open the login page, fill the form, and verify the dashboard is visible."
+                required
+              ></textarea>
+            </label>
+
+            <div class="row">
+              <label>
+                <span>AI Provider</span>
+                <input id="provider" name="provider" type="text" placeholder="OpenRouter" />
+              </label>
+
+              <label>
+                <span>Model</span>
+                <input id="model" name="model" type="text" placeholder="openai/gpt-4.1-mini" />
+              </label>
+            </div>
+
+            <label>
+              <span>Fallback Models</span>
+              <input
+                id="fallbackModels"
+                name="fallbackModels"
+                type="text"
+                placeholder="openai/gpt-4o-mini,openai/gpt-4.1-nano"
+              />
+            </label>
+
+            <label>
+              <span>Base URL</span>
+              <input id="baseUrl" name="baseUrl" type="text" placeholder="https://openrouter.ai/api/v1" />
+            </label>
+
+            <div class="button-row">
+              <button id="startButton" class="primary-button" type="submit">Start Recording</button>
+              <button id="playbackButton" class="secondary-button" type="button">Playback Testcase</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel panel-preview">
+          <div class="panel-header">
+            <h2>Browser Preview</h2>
+            <p>Latest Playwright snapshot from the active run.</p>
+          </div>
+          <div class="preview-frame">
+            <img id="previewImage" alt="Live browser preview" />
+            <div id="previewEmpty" class="empty-state">
+              The browser preview will appear here after the recording starts.
+            </div>
+          </div>
+        </section>
+
+        <section class="panel panel-steps">
+          <div class="panel-header">
+            <h2>Recorded Steps</h2>
+            <p>Every action the agent commits to the test case.</p>
+          </div>
+          <ol id="stepsList" class="step-list"></ol>
+        </section>
+
+        <section class="panel panel-logs">
+          <div class="panel-header">
+            <h2>Live Logs</h2>
+            <p>Runtime output from the recorder engine.</p>
+          </div>
+          <pre id="logOutput" class="log-output"></pre>
+        </section>
+
+        <section class="panel panel-json">
+          <div class="panel-header">
+            <h2>Generated JSON</h2>
+            <p>The reusable test case produced by the recorder.</p>
+          </div>
+          <pre id="jsonOutput" class="json-output"></pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+  </html>

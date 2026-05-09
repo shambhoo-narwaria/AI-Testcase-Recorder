@@ -594,6 +594,18 @@ export class BrowserManager {
     return this.page;
   }
 
+  async capturePreview(filePath: string): Promise<void> {
+    const page = this.requirePage();
+    const resolvedPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    const targetDir = path.dirname(resolvedPath);
+
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    await page.screenshot({ path: resolvedPath, fullPage: false });
+  }
+
   private requirePage(): Page {
     if (!this.page) {
       throw new Error('Browser not initialized');
