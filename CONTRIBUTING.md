@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to AI Testcase Recorder.
+Thanks for your interest in contributing to AI Testcase Recorder.
 
 ## Getting Started
 
@@ -12,39 +12,39 @@ Thanks for contributing to AI Testcase Recorder.
 npm install
 ```
 
-4. Create a `.env` file with your AI provider settings.
+4. Create a `.env` file with your AI provider configuration.
 
 ## Development
 
-- Keep changes focused and small where possible.
-- Follow the existing TypeScript and project structure.
-- Update the README or examples when behavior changes.
-- Avoid committing secrets, API keys, or generated artifacts unless needed.
+- Keep changes focused and easy to review.
+- Follow the existing TypeScript structure and naming style.
+- Update documentation when behavior or setup changes.
+- Never commit API keys, tokens, or other secrets.
 
-## Before Submitting
+## Before Opening a Pull Request
 
-Run the project checks before opening a pull request:
+Run the project check:
 
 ```bash
 npm run check
 ```
 
-If your change affects recording or playback behavior, test it locally as well.
+If your change affects recording or playback, test that flow locally as well.
 
 ## Pull Requests
 
-- Use a clear title and summary.
+- Use a clear title and short summary.
 - Explain what changed and why.
-- Include screenshots or logs if they help explain the change.
 - Link related issues when applicable.
+- Add screenshots or logs if they help explain the change.
 
-## Issues
+## Reporting Issues
 
-If you find a bug or want to suggest an improvement, open an issue with:
+When reporting a bug, try to include:
 
-- a short description
+- what you expected
+- what actually happened
 - steps to reproduce
-- expected behavior
-- actual behavior
+- useful logs or screenshots
 
 Thanks for helping improve the project.
