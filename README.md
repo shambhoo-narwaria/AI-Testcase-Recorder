@@ -11,12 +11,12 @@ The recorder:
 - stores the recorded steps in `output/test-case.json`
 
 You can then replay the saved test case with the playback script in `tests/playback.ts`.
-You can also launch a local GUI to configure runs, watch live logs, preview the browser, and inspect the generated JSON output.
+You can also launch a local GUI to configure runs, watch live logs, preview the browser, playback existing test cases, and inspect the generated JSON output.
 
 ## Demo
 
-### GUI Preview
-![GUI Preview](./assets/demo/gui-preview.png)
+### Recording Preview
+![Recording Preview](./assets/demo/recording.gif)
 
 ## What This Project Does
 
@@ -211,6 +211,7 @@ The GUI lets you:
 - choose provider, model, and fallback models
 - watch live recorder logs
 - view the latest browser preview snapshot
+- playback the existing test case (triggering `npm run playback`)
 - inspect the generated JSON test case
 
 ### 3. Replay the recorded test case
@@ -218,6 +219,8 @@ The GUI lets you:
 ```bash
 npm run playback
 ```
+
+Alternatively, you can trigger playback directly from the GUI after running `npm run gui`.
 
 Playback reads:
 
