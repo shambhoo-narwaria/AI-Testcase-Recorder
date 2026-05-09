@@ -22,7 +22,7 @@ async function runPlayback(): Promise<void> {
     let stepNumber = 1;
 
     for (const step of testCase.steps) {
-      console.log(`[Step ${stepNumber}] Executing ${step.action} ${step.target || step.url || step.value || ''}`);
+      console.log(`[Step ${stepNumber}] Executing ${step.action} on ${getStepLabel(step)} ${step.value ? `(${step.value})` : ''}`);
       await browserManager.executeStep(step, { stepIndex: stepNumber, isPlayback: true });
       stepNumber += 1;
 
@@ -40,3 +40,22 @@ async function runPlayback(): Promise<void> {
 }
 
 void runPlayback();
+
+function getStepLabel(step: TestStep): string {
+  const s = step.selectors;
+  if (s) {
+    const name = s.text || s.ariaLabel || s.label || s.placeholder || s.title || s.alt || s.id || s.name;
+    if (name) {
+      return `${s.role ? `${s.role} ` : ''}"${name}"`.trim();
+    }
+  }
+
+  if (step.url) return step.url;
+  if (step.target && !step.target.includes('[data-ai-id')) {
+    return step.target;
+  }
+
+  return 'element';
+}
+
+import type { TestStep } from '../src/utils/types.js';

@@ -11,6 +11,12 @@ The recorder:
 - stores the recorded steps in `output/test-case.json`
 
 You can then replay the saved test case with the playback script in `tests/playback.ts`.
+You can also launch a local GUI to configure runs, watch live logs, preview the browser, and inspect the generated JSON output.
+
+## Demo
+
+### GUI Preview
+![GUI Preview](./assets/demo/gui-preview.png)
 
 ## What This Project Does
 
@@ -40,16 +46,21 @@ AI-Testcase-Recorder/
 |-- output/
 |   |-- test-case.json
 |-- public/
+|   |-- app.js
+|   |-- index.html
+|   `-- styles.css
 |-- src/
 |   |-- ai/
 |   |   |-- AIAgent.ts
 |   |-- core/
 |   |   |-- BrowserManager.ts
 |   |   |-- Recorder.ts
+|   |   `-- RecordingRunner.ts
 |   |-- utils/
 |   |   |-- domUtils.ts
 |   |   |-- types.ts
-|   `-- record.ts
+|   |-- record.ts
+|   `-- server.ts
 |-- tests/
 |   `-- playback.ts
 |-- .env
@@ -63,9 +74,11 @@ AI-Testcase-Recorder/
 ## Main Files
 
 - `src/record.ts`: main recording entry point
+- `src/server.ts`: local GUI server for browser-based recording control
 - `src/ai/AIAgent.ts`: asks the model for the next browser action
 - `src/core/BrowserManager.ts`: launches Playwright and executes actions
 - `src/core/Recorder.ts`: saves recorded steps into `output/test-case.json`
+- `src/core/RecordingRunner.ts`: shared recording runner used by both CLI and GUI flows
 - `src/utils/domUtils.ts`: extracts interactive DOM data for the AI
 - `src/utils/types.ts`: shared TypeScript types
 - `tests/playback.ts`: replays the saved test case
@@ -180,7 +193,27 @@ Recorded output is saved to:
 output/test-case.json
 ```
 
-### 2. Replay the recorded test case
+### 2. Launch the GUI
+
+```bash
+npm run gui
+```
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+The GUI lets you:
+
+- enter the start URL and goal
+- choose provider, model, and fallback models
+- watch live recorder logs
+- view the latest browser preview snapshot
+- inspect the generated JSON test case
+
+### 3. Replay the recorded test case
 
 ```bash
 npm run playback
@@ -206,11 +239,13 @@ These are useful when a step fails and you want to see the page state at that mo
 
 ```bash
 npm run check
+npm run gui
 npm run record
 npm run playback
 ```
 
 - `npm run check`: run the TypeScript type check
+- `npm run gui`: start the local browser-based recorder interface
 - `npm run record`: start AI-based recording
 - `npm run playback`: replay the saved test case
 

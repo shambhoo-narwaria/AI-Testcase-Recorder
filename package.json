@@ -6,7 +6,8 @@
   "scripts": {
     "check": "tsc --noEmit",
     "record": "tsx src/record.ts",
-    "playback": "tsx tests/playback.ts"
+    "playback": "tsx tests/playback.ts",
+    "gui": "tsx src/server.ts"
   },
   "keywords": [],
   "author": "",
