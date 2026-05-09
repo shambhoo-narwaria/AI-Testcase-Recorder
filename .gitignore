@@ -1,0 +1,16 @@
+node_modules/
+.env
+
+# Outputs
+test-case.json
+*.log
+artifacts/
+output/
+
+# Local config
+config/record-config.json
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

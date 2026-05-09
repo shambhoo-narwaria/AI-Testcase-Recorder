@@ -1,0 +1,12 @@
+{
+  "startUrl": "https://www.google.com",
+  "goal": "Search for Playwright and click on the official website",
+  "ai": {
+    "provider": "OpenRouter",
+    "model": "openai/gpt-4.1-mini",
+    "fallbackModels": [
+      "openai/gpt-4o-mini"
+    ],
+    "baseUrl": "https://openrouter.ai/api/v1"
+  }
+}
