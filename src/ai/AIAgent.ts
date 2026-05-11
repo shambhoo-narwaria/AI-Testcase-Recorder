@@ -116,7 +116,8 @@ export class AIAgent {
         console.error(`[Agent] API error (${status ?? 'unknown'}): ${stringifyError(error)}`);
 
         if (status === 429 || status === 503 || status === 400 || status === 404) {
-          console.log('[Agent] Switching to the next model in rotation.');
+          const nextModel = this.modelRotation[this.currentModelIndex % this.modelRotation.length];
+          console.log(`[Agent] Model "${modelName}" failed (status ${status}). Switching to "${nextModel}".`);
           attempt += 1;
           continue;
         }

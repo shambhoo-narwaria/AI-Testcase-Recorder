@@ -40,6 +40,25 @@ export interface RecordingRunResult {
 const LIVE_PREVIEW_PATH = 'artifacts/live-preview.png';
 
 export async function runRecording(config: RecordConfig, hooks: RecordingRunHooks = {}): Promise<RecordingRunResult> {
+  if (!process.env.AI_API_KEY && !process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
+    const message =
+      'No AI API key configured. Set one of the following in your .env file before recording:\n' +
+      '  AI_API_KEY=your_key_here\n' +
+      '  OPENROUTER_API_KEY=your_key_here\n' +
+      '  OPENAI_API_KEY=your_key_here';
+    console.error(`\n[Error] ${message}\n`);
+    hooks.onStatus?.('failed');
+    hooks.onLog?.(`[Error] ${message}`);
+    return {
+      success: false,
+      goalReached: false,
+      steps: [],
+      testCase: buildTestCase(buildTestName(config.goal), []),
+      outputPath: 'output/test-case.json',
+      error: message,
+    };
+  }
+
   const browserManager = new BrowserManager();
   const recorder = new Recorder(buildTestName(config.goal));
   const maxAiSteps = Number(process.env.MAX_AI_STEPS ?? 20);
