@@ -1,9 +1,9 @@
-import * as dotenv from "dotenv";
-import { AIAgent } from "../ai/AIAgent.js";
-import type { AIAgentConfig } from "../ai/AIAgent.js";
-import { BrowserManager } from "./BrowserManager.js";
-import { Recorder } from "./Recorder.js";
-import type { TestCase, TestStep } from "../utils/types.js";
+import * as dotenv from 'dotenv';
+import { AIAgent } from '../ai/AIAgent.js';
+import type { AIAgentConfig } from '../ai/AIAgent.js';
+import { BrowserManager } from './BrowserManager.js';
+import { Recorder } from './Recorder.js';
+import type { TestCase, TestStep } from '../utils/types.js';
 
 dotenv.config();
 
@@ -37,31 +37,24 @@ export interface RecordingRunResult {
   error?: string;
 }
 
-const LIVE_PREVIEW_PATH = "artifacts/live-preview.png";
+const LIVE_PREVIEW_PATH = 'artifacts/live-preview.png';
 
-export async function runRecording(
-  config: RecordConfig,
-  hooks: RecordingRunHooks = {}
-): Promise<RecordingRunResult> {
-  if (
-    !process.env.AI_API_KEY &&
-    !process.env.OPENROUTER_API_KEY &&
-    !process.env.OPENAI_API_KEY
-  ) {
+export async function runRecording(config: RecordConfig, hooks: RecordingRunHooks = {}): Promise<RecordingRunResult> {
+  if (!process.env.AI_API_KEY && !process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
     const message =
-      "No AI API key configured. Set one of the following in your .env file before recording:\n" +
-      "  AI_API_KEY=your_key_here\n" +
-      "  OPENROUTER_API_KEY=your_key_here\n" +
-      "  OPENAI_API_KEY=your_key_here";
+      'No AI API key configured. Set one of the following in your .env file before recording:\n' +
+      '  AI_API_KEY=your_key_here\n' +
+      '  OPENROUTER_API_KEY=your_key_here\n' +
+      '  OPENAI_API_KEY=your_key_here';
     console.error(`\n[Error] ${message}\n`);
-    hooks.onStatus?.("failed");
+    hooks.onStatus?.('failed');
     hooks.onLog?.(`[Error] ${message}`);
     return {
       success: false,
       goalReached: false,
       steps: [],
       testCase: buildTestCase(buildTestName(config.goal), []),
-      outputPath: "output/test-case.json",
+      outputPath: 'output/test-case.json',
       error: message,
     };
   }
@@ -69,13 +62,9 @@ export async function runRecording(
   const browserManager = new BrowserManager();
   const recorder = new Recorder(buildTestName(config.goal));
   const maxAiSteps = Number(process.env.MAX_AI_STEPS ?? 20);
-  const agent = new AIAgent(
-    config.goal,
-    maxAiSteps,
-    buildAgentConfig(config.ai)
-  );
+  const agent = new AIAgent(config.goal, maxAiSteps, buildAgentConfig(config.ai));
 
-  hooks.onStatus?.("starting");
+  hooks.onStatus?.('starting');
   hooks.onLog?.(`[Main] Goal: ${config.goal}`);
   hooks.onLog?.(`[Main] Navigating to ${config.startUrl}`);
 
@@ -84,12 +73,12 @@ export async function runRecording(
     await captureLivePreview(browserManager, hooks);
 
     const navResult = await browserManager.executeStep(
-      { action: "navigate", url: config.startUrl },
-      { stepIndex: 0 }
+      { action: 'navigate', url: config.startUrl },
+      { stepIndex: 0 },
     );
 
     const initialStep: TestStep = {
-      action: "navigate",
+      action: 'navigate',
       url: config.startUrl,
       result: navResult.result,
     };
@@ -101,42 +90,33 @@ export async function runRecording(
     let aiStepCount = 0;
     let lastError: string | null = null;
 
-    hooks.onStatus?.("recording");
+    hooks.onStatus?.('recording');
 
     while (!goalReached && aiStepCount < maxAiSteps) {
       hooks.onLog?.(`[Main] --- AI Step ${aiStepCount + 1}/${maxAiSteps} ---`);
-      const nextStep = await agent.getNextStep(
-        page,
-        recorder.getSteps(),
-        lastError
-      );
+      const nextStep = await agent.getNextStep(page, recorder.getSteps(), lastError);
       lastError = null;
 
-      if (nextStep === "GOAL_REACHED") {
-        hooks.onLog?.("[Main] Goal reached.");
+      if (nextStep === 'GOAL_REACHED') {
+        hooks.onLog?.('[Main] Goal reached.');
         goalReached = true;
         break;
       }
 
-      if (nextStep === "FAILED") {
-        hooks.onLog?.("[Main] Agent failed to decide the next step.");
+      if (nextStep === 'FAILED') {
+        hooks.onLog?.('[Main] Agent failed to decide the next step.');
         break;
       }
 
       hooks.onLog?.(
-        `[Main] Executing: ${nextStep.action} on ${getStepLabel(nextStep)} ${
-          nextStep.value ? `with value "${nextStep.value}"` : ""
-        }`.trim()
+        `[Main] Executing: ${nextStep.action} on ${getStepLabel(nextStep)} ${nextStep.value ? `with value "${nextStep.value}"` : ''}`.trim(),
       );
 
       try {
         const urlBefore = page.url();
-        const { selectors, result } = await browserManager.executeStep(
-          nextStep,
-          {
-            stepIndex: aiStepCount + 1,
-          }
-        );
+        const { selectors, result } = await browserManager.executeStep(nextStep, {
+          stepIndex: aiStepCount + 1,
+        });
 
         const recordedStep: TestStep = {
           ...nextStep,
@@ -183,8 +163,8 @@ export async function runRecording(
       outputPath,
     };
 
-    hooks.onStatus?.(goalReached ? "completed" : "stopped");
-    hooks.onLog?.("[Main] Recording session complete.");
+    hooks.onStatus?.(goalReached ? 'completed' : 'stopped');
+    hooks.onLog?.('[Main] Recording session complete.');
     hooks.onFinished?.(result);
     return result;
   } catch (error) {
@@ -194,10 +174,10 @@ export async function runRecording(
       goalReached: false,
       steps: recorder.getSteps(),
       testCase: buildTestCase(buildTestName(config.goal), recorder.getSteps()),
-      outputPath: "output/test-case.json",
+      outputPath: 'output/test-case.json',
       error: message,
     };
-    hooks.onStatus?.("failed");
+    hooks.onStatus?.('failed');
     hooks.onLog?.(`[Main] Execution error: ${message}`);
     hooks.onFinished?.(result);
     return result;
@@ -229,23 +209,20 @@ export function buildAgentConfig(ai?: RecordAiConfig): AIAgentConfig {
 }
 
 export function isValidAiConfig(ai: RecordAiConfig): boolean {
-  if (ai.provider !== undefined && typeof ai.provider !== "string") {
+  if (ai.provider !== undefined && typeof ai.provider !== 'string') {
     return false;
   }
 
-  if (ai.model !== undefined && typeof ai.model !== "string") {
+  if (ai.model !== undefined && typeof ai.model !== 'string') {
     return false;
   }
 
-  if (ai.baseUrl !== undefined && typeof ai.baseUrl !== "string") {
+  if (ai.baseUrl !== undefined && typeof ai.baseUrl !== 'string') {
     return false;
   }
 
   if (ai.fallbackModels !== undefined) {
-    return (
-      Array.isArray(ai.fallbackModels) &&
-      ai.fallbackModels.every((model) => typeof model === "string")
-    );
+    return Array.isArray(ai.fallbackModels) && ai.fallbackModels.every((model) => typeof model === 'string');
   }
 
   return true;
@@ -266,10 +243,7 @@ function buildTestCase(testName: string, steps: TestStep[]): TestCase {
   };
 }
 
-async function captureLivePreview(
-  browserManager: BrowserManager,
-  hooks: RecordingRunHooks
-): Promise<void> {
+async function captureLivePreview(browserManager: BrowserManager, hooks: RecordingRunHooks): Promise<void> {
   const page = browserManager.getPage();
   if (!page || page.isClosed()) {
     return;
@@ -286,23 +260,15 @@ async function captureLivePreview(
 function getStepLabel(step: TestStep): string {
   const s = step.selectors;
   if (s) {
-    const name =
-      s.text ||
-      s.ariaLabel ||
-      s.label ||
-      s.placeholder ||
-      s.title ||
-      s.alt ||
-      s.id ||
-      s.name;
+    const name = s.text || s.ariaLabel || s.label || s.placeholder || s.title || s.alt || s.id || s.name;
     if (name) {
-      return `${s.role ? `${s.role} ` : ""}"${name}"`.trim();
+      return `${s.role ? `${s.role} ` : ''}"${name}"`.trim();
     }
   }
 
-  if (step.target && !step.target.includes("[data-ai-id")) {
+  if (step.target && !step.target.includes('[data-ai-id')) {
     return step.target;
   }
 
-  return "element";
+  return 'element';
 }
